@@ -31,29 +31,56 @@ banner() {
 scan() {
   banner
   
-	echo -e "Recon is in \e[31mprogress\e[0m, take a coffee"
+	echo -e "Scan is in \e[31mprogress\e[0m, take a coffee"
 
 	## Nuclei
 	echo -e ">> \e[36mNuclei\e[0m is in progress"
 	echo -e $domain | httprobe -p http:81 -p https:81 -p https:8443 -p http:8080 -p https:8080 > $ResultsPath/$domain/httprobe.txt
-	nuclei -t "$ToolsPath/nuclei-templates/all/*.yaml" -l $ResultsPath/$domain/httprobe.txt -o $ResultsPath/$domain/nuclei.txt > /dev/null 2>&1
+  nuclei -l $ResultsPath/$domain/httprobe.txt -t "$ToolsPath/nuclei-templates/all/*.yaml" -o $ResultsPath/$domain/nuclei.txt > /dev/null 2>&1
 
 	## Hawkraler
 	echo -e ">> \e[36mHakrawler\e[0m is in progress"
-	echo -e $domain | hakrawler -forms -js -linkfinder -plain -robots -sitemap -usewayback -outdir $ResultsPath/$domain/hakrawler > /dev/null 2>&1
-	echo -e $domain | hakrawler -forms -js -linkfinder -plain -robots -sitemap -usewayback | kxss >> $ResultsPath/$domain/kxss.txt
+	echo -e $domain | hakrawler -forms -js -linkfinder -plain -robots -sitemap -usewayback -outdir $ResultsPath/$domain/hakrawler | kxss >> $ResultsPath/$domain/kxss.txt
 
 	## ParamSpider
 	echo -e ">> \e[36mParamSpider\e[0m is in progress"
 	cd $ToolsPath/ParamSpider/
 	python3 paramspider.py --domain $domain --exclude woff,css,js,png,svg,jpg -o paramspider.txt > /dev/null 2>&1
 	mv ./output/paramspider.txt $ResultsPath/$domain/
-	echo -e "=== GF REDIRECT ===" >> $ResultsPath/$domain/gf.txt
-	gf redirect $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/gf.txt
+
+  ## GF
+  echo -e ">> \e[36mGF\e[0m is in progress"
+  mkdir $ResultsPath/$domain/GF
+
 	echo -e "\n\n=== GF XSS ===" >> $ResultsPath/$domain/gf.txt
-	gf xss $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/gf.txt
+	gf xss $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/xss.txt
+
 	echo -e "\n\n=== GF POTENTIAL ===" >> $ResultsPath/$domain/gf.txt
-	gf potential $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/gf.txt
+	gf potential $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/potential.txt
+
+  echo -e "\n\n=== GF DEBUG_LOGIC ===" >> $ResultsPath/$domain/gf.txt
+  gf debug_logic $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/debug_logic.txt
+
+  echo -e "\n\n=== GF IDOR ===" >> $ResultsPath/$domain/gf.txt
+  gf idor $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/idor.txt
+
+  echo -e "\n\n=== GF LFI ===" >> $ResultsPath/$domain/gf.txt
+  gf lfi $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/lfi.txt
+
+  echo -e "\n\n=== GF RCE ===" >> $ResultsPath/$domain/gf.txt
+  gf rce $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/rce.txt
+
+  echo -e "\n\n=== GF Redirect ===" >> $ResultsPath/$domain/gf.txt
+  gf redirect $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/redirect.txt
+
+  echo -e "\n\n=== GF SQLI ===" >> $ResultsPath/$domain/gf.txt
+  gf sqli $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/sqli.txt
+
+  echo -e "\n\n=== GF SSRF ===" >> $ResultsPath/$domain/gf.txt
+  gf ssrf $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/ssrf.txt
+
+  echo -e "\n\n=== GF SSTI ===" >> $ResultsPath/$domain/gf.txt
+  gf ssti $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/ssti.txt
 
 	## Ffuf Discovery
 	echo -e ">> \e[36mFfuf\e[0m is in progress"
@@ -64,7 +91,8 @@ scan() {
 	## JSScanner
 	echo -e ">> \e[36mJSScanner\e[0m is in progress"
 	echo -e "https://$domain" > $ToolsPath/JSScanner/alive.txt
-	cd $ToolsPath/JSScanner/ && bash script.sh
+	cd $ToolsPath/JSScanner/
+  bash script.sh > /dev/null 2>&1
 	mkdir $ResultsPath/$domain/JSScanner
 	mv js $ResultsPath/$domain/JSScanner/ && mv db $ResultsPath/$domain/JSScanner/
 

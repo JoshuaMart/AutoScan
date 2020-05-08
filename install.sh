@@ -10,15 +10,15 @@ mkdir $Tools
 ## Install Golang
 wget https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
 tar -C /usr/local -xzf go1.14.2.linux-amd64.tar.gz
-rm /root/Tools/go1.14.2.linux-amd64.tar.gz
+rm go1.14.2.linux-amd64.tar.gz
 echo -e "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
 source ~/.profile
 
 ## Install Nuclei
-wget https://github.com/projectdiscovery/nuclei/releases/download/v1.1.0/nuclei-linux-amd64.tar
-tar -xzvf nuclei-linux-amd64.tar
+wget https://github.com/projectdiscovery/nuclei/releases/download/v1.1.3/nuclei-linux-amd64.gz
+gunzip nuclei-linux-amd64.gz
 mv nuclei-linux-amd64 /usr/bin/nuclei
-rm nuclei-linux-amd64.tar
+chmod +x /usr/bin/nuclei
 
 cd $Tools
 git clone https://github.com/projectdiscovery/nuclei-templates
@@ -62,11 +62,15 @@ mv ~/go/bin/ffuf /usr/bin/
 ## Install GF
 go get -u github.com/tomnomnom/gf
 echo 'source /root/go/src/github.com/tomnomnom/gf/gf-completion.bash' >> ~/.bashrc
-source ~/.profile
+source ~/.bashrc
 cp -r /root/go/src/github.com/tomnomnom/gf/examples ~/.gf
 mv ~/go/bin/gf /usr/bin/
 cd ~/.gf
 cp $Tools/ParamSpider/gf_profiles/* .
+
+## Add more GF patterns
+git clone https://github.com/1ndianl33t/Gf-Patterns
+mv Gf-Patterns/*.json .
 
 ## Download Wordlist
 mkdir $Tools/Wordlists
