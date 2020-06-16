@@ -52,34 +52,24 @@ scan() {
   echo -e ">> \e[36mGF\e[0m is in progress"
   mkdir $ResultsPath/$domain/GF
 
-	echo -e "\n\n=== GF XSS ===" >> $ResultsPath/$domain/gf.txt
-	gf xss $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/xss.txt
+  gf xss $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/xss.txt
 
-	echo -e "\n\n=== GF POTENTIAL ===" >> $ResultsPath/$domain/gf.txt
-	gf potential $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/potential.txt
+  gf potential $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/potential.txt
 
-  echo -e "\n\n=== GF DEBUG_LOGIC ===" >> $ResultsPath/$domain/gf.txt
   gf debug_logic $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/debug_logic.txt
 
-  echo -e "\n\n=== GF IDOR ===" >> $ResultsPath/$domain/gf.txt
   gf idor $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/idor.txt
 
-  echo -e "\n\n=== GF LFI ===" >> $ResultsPath/$domain/gf.txt
   gf lfi $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/lfi.txt
 
-  echo -e "\n\n=== GF RCE ===" >> $ResultsPath/$domain/gf.txt
   gf rce $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/rce.txt
 
-  echo -e "\n\n=== GF Redirect ===" >> $ResultsPath/$domain/gf.txt
   gf redirect $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/redirect.txt
 
-  echo -e "\n\n=== GF SQLI ===" >> $ResultsPath/$domain/gf.txt
   gf sqli $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/sqli.txt
 
-  echo -e "\n\n=== GF SSRF ===" >> $ResultsPath/$domain/gf.txt
   gf ssrf $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/ssrf.txt
 
-  echo -e "\n\n=== GF SSTI ===" >> $ResultsPath/$domain/gf.txt
   gf ssti $ResultsPath/$domain/paramspider.txt >> $ResultsPath/$domain/GF/ssti.txt
 
 	## Ffuf Discovery
